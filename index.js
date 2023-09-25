@@ -42,8 +42,20 @@ app.put("/todos/:id/markAsCompleted",async (req,res)=>{
     
 });
 
-app.delete("/todos/:id",(req,res)=>{
+app.delete("/todos/:id",async (req,res)=>{
     console.log("delete a todo with id:",req.params.id); 
+    const todo = await Todo.findByPk(req.params.id);
+  try{
+    const deletedTodo = await todo.deleteId(req.params.id);
+    return res.send(true);
+    //return res.json(deletedTodo);
+    
+  }
+  catch(error){
+    console.log(error);
+    return res.send(false);
+    //return res.status(422).json(error);
+  }
 });
 
 app.listen(port, () => {

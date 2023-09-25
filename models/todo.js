@@ -20,6 +20,12 @@ module.exports = (sequelize, DataTypes) => {
       return this.update({completed : true});
     }
 
+    deleteId(id){
+      return this.destroy({where : {id}});
+    }
+
+
+
 
   }
   Todo.init({
