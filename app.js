@@ -4,22 +4,52 @@ const app = express();
 
 const bodyParser = require('body-parser');
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended:true}));
+
 const path = require("path");
 
 const {Todo} = require("./models");
 
 app.set("view engine","ejs");
 
+function getCurrentDate() {
+  const today = new Date();
+
+  // Get the year, day, and month
+  const year = today.getFullYear();
+  let day = today.getDate();
+  let month = today.getMonth() + 1; // Months are 0-based, so add 1
+
+  // Ensure day and month have two digits
+  day = day.toString().padStart(2, '0');
+  month = month.toString().padStart(2, '0');
+
+  // Format the date as "YYYY-DD-MM"
+  const formattedDate = `${year}-${month}-${day}`;
+
+  return formattedDate;
+}
+
+// Example usage
+const today = getCurrentDate();
+//console.log(currentDate); // Output: "2023-26-09"
+
+
+
 app.get("/",async (req,res)=> {
-  const allTodos = await Todo.getTodos();
+  const overDue = await Todo.overdue_todos();
+  const dueToday = await Todo.duetoday_todos();
+  const dueLater = await Todo.duelater_todos();
   if(req.accepts("html")){
     res.render('index',{
-      allTodos
+      overDue,
+      dueToday,
+      dueLater
     });
   }
   else{
     res.json({
-      allTodos
+      overDue,dueToday,dueLater
     });
   }
 });
@@ -33,8 +63,13 @@ app.get("/todos", (req, res) => {
 app.post("/todos", async (req, res) => {
   console.log("Creating a todo", req.body);
   try{
-    const todo = await Todo.addTodo({title: req.body.title, dueDate: req.body.dueDate, completed: false});
-    return res.json(todo);
+    const title = req.body.title;
+    const dueDate = req.body.dueDate;
+    const todo = await Todo.addTodo({title: title, dueDate: dueDate, completed: false});
+
+    //console.log(dueDate == today);
+    
+    return res.redirect("/");
   }
   catch(error){
     console.log(error);
@@ -46,8 +81,10 @@ app.post("/todos", async (req, res) => {
 app.put("/todos/:id/markAsCompleted",async (req,res)=>{
     console.log("Update a todo with id :",req.params.id);
     const todo = await Todo.findByPk(req.params.id);
+
+    const status = todo.completed;
     try{
-      const updatedTodo = await todo.markAsCompleted();
+      const updatedTodo = await todo.markAsCompleted(status);
       return res.json(updatedTodo);
     }
     catch(error){
@@ -62,7 +99,7 @@ app.delete("/todos/:id",async (req,res)=>{
     const todo = await Todo.findByPk(req.params.id);
   try{
     const deletedTodo = await todo.deleteId(req.params.id);
-    return res.send(true);
+    return res.json({success:true});
     //return res.json(deletedTodo);
     
   }

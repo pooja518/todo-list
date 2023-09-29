@@ -1,9 +1,33 @@
-
-body{
+body {
     background-color: white;
     font-family: 'Courier New', Courier, monospace;
 }
 
-.Todo-item:hover .trash-icon{
-    display:block;
+/* Style for checkboxes */
+.Todo-item input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    margin-right: 10px;
+    /* You can customize the appearance of the checkbox further if needed */
+}
+
+/* Style for checked checkboxes */
+.Todo-item input[type="checkbox"]:checked {
+    background-color: #2196F3; /* Change to the desired background color for checked checkboxes */
+}
+
+/* Style for task labels */
+.Todo-item label {
+    font-size: 16px; /* Adjust font size as needed */
+}
+
+/* Show trash icon when hovering over Todo-item */
+.Todo-item:hover .trash-icon {
+    display: block;
+}
+
+/* Style for the trash icon (assuming it has a class .trash-icon) */
+.trash-icon {
+    display: none;
+    /* Add styles for the trash icon, e.g., background image, size, etc. */
 }

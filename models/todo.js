@@ -1,6 +1,6 @@
 'use strict';
 const {
-  Model
+  Model,Op
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
   class Todo extends Model {
@@ -16,13 +16,48 @@ module.exports = (sequelize, DataTypes) => {
       return this.create({title: title,dueDate: dueDate,completed: false});
     }
 
+    static overdue_todos(){
+      const overdue = this.findAll({
+        where:{
+          dueDate:{
+            [Op.lt]: new Date().toLocaleDateString("en-CA"),
+          }, 
+        },
+      });
+      return overdue;
+    }
+
+    static duetoday_todos(){
+      const duetoday = this.findAll({
+        where:{
+          dueDate:{
+            [Op.eq]: new Date().toLocaleDateString("en-CA"),
+          },  
+        },
+      });
+      return duetoday;
+    }
+
+
+    static duelater_todos(){
+      const duelater = this.findAll({
+        where:{
+          dueDate:{
+            [Op.gt]: new Date().toLocaleDateString("en-CA"),
+          }, 
+        },
+      });
+      return duelater;
+    }
+
 
     static getTodos(){
       return this.findAll();
     }
 
-    markAsCompleted(){
-      return this.update({completed : true});
+
+    markAsCompleted(status){
+      return this.update({completed : !status});
     }
 
     deleteId(id){
