@@ -3,14 +3,19 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="csrf-token" content="<%= csrfToken %>"/>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="./css/styles.css" rel="stylesheet" />
     <title>Todo Manager</title>
     <script>
+      var token = document.querySelector('meta[name="csrf-token"]').getAttribute("content");
       function updateTodo(id) {
-        fetch(`/todos/${id}/markAsCompleted`, {
+        fetch(`/todos/${id}/`, {
           method: "put",
           headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            "_csrf": token
+          })
         })
           .then((res) => {
             if (res.ok) {
@@ -25,6 +30,9 @@
         fetch(`/todos/${id}/`,{
           method:"delete",
           headers: {'Content-type':'application/json'},
+          body: JSON.stringify({
+            "_csrf": token
+          })
         })
         .then((res)=> {
           if(res.ok){
@@ -40,6 +48,7 @@
       <div class="col-start-3 col-span-2">
         <%- include('header.ejs') %>
         <form action="/todos" method="POST">
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
           <div class="flex gap-2 py-4">
             <div class="flex-auto">
               <input
@@ -55,6 +64,7 @@
                 type="date"
                 name="dueDate"
                 class="border border-gray-300 rounded text-gray-900 w-full p-2 text-sm leading-4"
+                required
               />
             </div>
             <div class="flex-none">
@@ -69,9 +79,11 @@
         </form>
 
         <div>
-          <%- include('todo.ejs', {title: "Overdue", data: overDue}) %> <%-
-          include('todo.ejs', {title: "Due Today", data: dueToday}) %> <%-
-          include('todo.ejs', {title: "Due Later", data: dueLater}) %>
+          <%- include('todo.ejs', {title: "Overdue", data: overDue}) %> 
+          <%- include('todo.ejs', {title: "Due Today", data: dueToday}) %> 
+          <%- include('todo.ejs', {title: "Due Later", data: dueLater}) %>
+          <%- include('todo.ejs',{title: "Completed Items",data: completedItems}) %>
+          
         </div>
         <%- include("footer.ejs") %>
       </div>

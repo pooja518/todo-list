@@ -16,38 +16,51 @@ module.exports = (sequelize, DataTypes) => {
       return this.create({title: title,dueDate: dueDate,completed: false});
     }
 
-    static overdue_todos(){
+    static overdue_todos(today){
       const overdue = this.findAll({
         where:{
           dueDate:{
-            [Op.lt]: new Date().toLocaleDateString("en-CA"),
-          }, 
+            [Op.lt]: today,
+          },
+          completed: false,
         },
       });
       return overdue;
     }
 
-    static duetoday_todos(){
+    static duetoday_todos(today){
       const duetoday = this.findAll({
         where:{
           dueDate:{
-            [Op.eq]: new Date().toLocaleDateString("en-CA"),
-          },  
+            [Op.eq]: today,
+          },
+          completed: false,  
         },
       });
       return duetoday;
     }
 
 
-    static duelater_todos(){
+    static duelater_todos(today){
       const duelater = this.findAll({
         where:{
           dueDate:{
-            [Op.gt]: new Date().toLocaleDateString("en-CA"),
-          }, 
+            [Op.gt]: today,
+          },
+          completed: false, 
         },
       });
       return duelater;
+    }
+
+
+    static completed_todos(){
+      const completedItems = this.findAll({
+        where:{
+          completed: true
+        },
+      });
+      return completedItems;
     }
 
 
@@ -56,7 +69,7 @@ module.exports = (sequelize, DataTypes) => {
     }
 
 
-    markAsCompleted(status){
+    setCompletionStatus(status){
       return this.update({completed : !status});
     }
 
