@@ -10,12 +10,15 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       title: {
+        allowNull: false,
         type: Sequelize.STRING
       },
       dueDate: {
+        allowNull: false,
         type: Sequelize.DATEONLY
       },
       completed: {
+        allowNull: false,
         type: Sequelize.BOOLEAN
       },
       createdAt: {

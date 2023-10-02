@@ -15,28 +15,30 @@ module.exports = (sequelize, DataTypes) => {
       })
       // define association here
     }
-    static addTodo({title,dueDate}){
-      return this.create({title: title,dueDate: dueDate,completed: false});
+    static addTodo({title,dueDate,userId}){
+      return this.create({title: title,dueDate: dueDate,completed: false,userId});
     }
 
-    static overdue_todos(today){
+    static overdue_todos(today,userId){
       const overdue = this.findAll({
         where:{
           dueDate:{
             [Op.lt]: today,
           },
+          userId,
           completed: false,
         },
       });
       return overdue;
     }
 
-    static duetoday_todos(today){
+    static duetoday_todos(today,userId){
       const duetoday = this.findAll({
         where:{
           dueDate:{
             [Op.eq]: today,
           },
+          userId,
           completed: false,  
         },
       });
@@ -44,12 +46,13 @@ module.exports = (sequelize, DataTypes) => {
     }
 
 
-    static duelater_todos(today){
+    static duelater_todos(today,userId){
       const duelater = this.findAll({
         where:{
           dueDate:{
             [Op.gt]: today,
           },
+          userId,
           completed: false, 
         },
       });
@@ -57,9 +60,10 @@ module.exports = (sequelize, DataTypes) => {
     }
 
 
-    static completed_todos(){
+    static completed_todos(userId){
       const completedItems = this.findAll({
         where:{
+          userId,
           completed: true
         },
       });
@@ -76,8 +80,8 @@ module.exports = (sequelize, DataTypes) => {
       return this.update({completed : !status});
     }
 
-    deleteId(id){
-      return this.destroy({where : {id}});
+    deleteId(id,userId){
+      return this.destroy({where : {id,userId}});
     }
 
 
